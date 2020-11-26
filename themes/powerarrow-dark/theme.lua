@@ -16,17 +16,17 @@ local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
 local theme                                     = {}
 theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-dark"
-theme.wallpaper                                 = theme.dir .. "/wall.png"
+theme.wallpaper                                 = theme.dir .. "/SHINJUKU_BEAT_VOL1_ALBUM_COVER.jpg"
 theme.font                                      = "Terminus 9"
 theme.fg_normal                                 = "#DDDDFF"
-theme.fg_focus                                  = "#EA6F81"
+theme.fg_focus                                  = "#46A8C3"
 theme.fg_urgent                                 = "#CC9393"
 theme.bg_normal                                 = "#1A1A1A"
 theme.bg_focus                                  = "#313131"
 theme.bg_urgent                                 = "#1A1A1A"
 theme.border_width                              = dpi(1)
 theme.border_normal                             = "#3F3F3F"
-theme.border_focus                              = "#7F7F7F"
+theme.border_focus                              = "#2b54a7"
 theme.border_marked                             = "#CC9393"
 theme.tasklist_bg_focus                         = "#1A1A1A"
 theme.titlebar_bg_focus                         = theme.bg_focus
@@ -165,7 +165,7 @@ theme.mpd = lain.widget.mpd({
             mpdicon:set_image(theme.widget_music)
         end
 
-        widget:set_markup(markup.font(theme.font, markup("#EA6F81", artist) .. title))
+        widget:set_markup(markup.font(theme.font, markup("#46A8C3", artist) .. title))
     end
 })
 
@@ -261,7 +261,7 @@ local net = lain.widget.net({
         widget:set_markup(markup.font(theme.font,
                           markup("#7AC82E", " " .. string.format("%06.1f", net_now.received))
                           .. " " ..
-                          markup("#46A8C3", " " .. string.format("%06.1f", net_now.sent) .. " ")))
+                          markup("#EA6F81", " " .. string.format("%06.1f", net_now.sent) .. " ")))
     end
 })
 
@@ -320,30 +320,25 @@ function theme.at_screen_connect(s)
             wibox.widget.systray(),
             keyboardlayout,
             spr,
+
             arrl_ld,
-            wibox.container.background(mpdicon, theme.bg_focus),
+                    wibox.container.background(mpdicon, theme.bg_focus),
             wibox.container.background(theme.mpd.widget, theme.bg_focus),
             arrl_dl,
-            volicon,
+         volicon,
             theme.volume.widget,
             arrl_ld,
-            wibox.container.background(mailicon, theme.bg_focus),
-            --wibox.container.background(theme.mail.widget, theme.bg_focus),
+     wibox.container.background(memicon, theme.bg_focus),
+            wibox.container.background(mem.widget, theme.bg_focus),
             arrl_dl,
-            memicon,
-            mem.widget,
+                      wibox.container.background(cpuicon, theme.bg_normal),
+            wibox.container.background(cpu.widget, theme.bg_normal), 
             arrl_ld,
-            wibox.container.background(cpuicon, theme.bg_focus),
-            wibox.container.background(cpu.widget, theme.bg_focus),
+ wibox.container.background(tempicon, theme.bg_focus),
+            wibox.container.background(temp.widget, theme.bg_focus),
             arrl_dl,
-            tempicon,
-            temp.widget,
-            arrl_ld,
-            wibox.container.background(fsicon, theme.bg_focus),
+                        wibox.container.background(fsicon, theme.bg_normal),
             --wibox.container.background(theme.fs.widget, theme.bg_focus),
-            arrl_dl,
-            baticon,
-            bat.widget,
             arrl_ld,
             wibox.container.background(neticon, theme.bg_focus),
             wibox.container.background(net.widget, theme.bg_focus),
