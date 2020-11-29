@@ -66,6 +66,7 @@ theme.widget_vol_no                             = theme.dir .. "/icons/vol_no.pn
 theme.widget_vol_mute                           = theme.dir .. "/icons/vol_mute.png"
 theme.widget_mail                               = theme.dir .. "/icons/mail.png"
 theme.widget_mail_on                            = theme.dir .. "/icons/mail_on.png"
+theme.widget_task                               = theme.dir .. "/icons/task.png"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
 theme.useless_gap                               = dpi(0)
@@ -96,7 +97,7 @@ local keyboardlayout = awful.widget.keyboardlayout:new()
 -- Textclock
 local clockicon = wibox.widget.imagebox(theme.widget_clock)
 local clock = awful.widget.watch(
-    "date +'%a %d %b %R'", 60,
+    "date +'%a %d %b %l:%M %P'", 60,
     function(widget, stdout)
         widget:set_markup(" " .. markup.font(theme.font, stdout))
     end
@@ -104,13 +105,21 @@ local clock = awful.widget.watch(
 
 -- Calendar
 theme.cal = lain.widget.cal({
-    attach_to = { clock },
+    attach_to = { cock },
     notification_preset = {
         font = "Terminus 10",
         fg   = theme.fg_normal,
         bg   = theme.bg_normal
     }
 })
+
+-- Taskwarrior
+local task = wibox.widget.imagebox(theme.widget_task)
+lain.widget.contrib.task.attach(task, {
+    -- do not colorize output
+    show_cmd = "task | sed -r 's/\\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g'"
+})
+task:buttons(my_table.join(awful.button({}, 1, lain.widget.contrib.task.prompt)))
 
 -- Mail IMAP check
 local mailicon = wibox.widget.imagebox(theme.widget_mail)
@@ -320,30 +329,28 @@ function theme.at_screen_connect(s)
             wibox.widget.systray(),
             keyboardlayout,
             spr,
-
             arrl_ld,
-                    wibox.container.background(mpdicon, theme.bg_focus),
-            wibox.container.background(theme.mpd.widget, theme.bg_focus),
+            	wibox.container.background(mpdicon, theme.bg_focus),
+            	wibox.container.background(theme.mpd.widget, theme.bg_focus),
             arrl_dl,
-         volicon,
-            theme.volume.widget,
+            	volicon,
+            	theme.volume.widget,
             arrl_ld,
-     wibox.container.background(memicon, theme.bg_focus),
-            wibox.container.background(mem.widget, theme.bg_focus),
+     	    	wibox.container.background(task, theme.bg_focus),
             arrl_dl,
-                      wibox.container.background(cpuicon, theme.bg_normal),
-            wibox.container.background(cpu.widget, theme.bg_normal), 
+            	wibox.container.background(cpuicon, theme.bg_normal),
+            	wibox.container.background(cpu.widget, theme.bg_normal), 
             arrl_ld,
- wibox.container.background(tempicon, theme.bg_focus),
-            wibox.container.background(temp.widget, theme.bg_focus),
+ 	    	wibox.container.background(tempicon, theme.bg_focus),
+            	wibox.container.background(temp.widget, theme.bg_focus),
             arrl_dl,
-                        wibox.container.background(fsicon, theme.bg_normal),
-            --wibox.container.background(theme.fs.widget, theme.bg_focus),
+            	wibox.container.background(memicon, theme.bg_normal),
+            	wibox.container.background(mem.widget, theme.bg_normal),
             arrl_ld,
-            wibox.container.background(neticon, theme.bg_focus),
-            wibox.container.background(net.widget, theme.bg_focus),
+            	wibox.container.background(neticon, theme.bg_focus),
+            	wibox.container.background(net.widget, theme.bg_focus),
             arrl_dl,
-            clock,
+            	clock,
             spr,
             arrl_ld,
             wibox.container.background(s.mylayoutbox, theme.bg_focus),
