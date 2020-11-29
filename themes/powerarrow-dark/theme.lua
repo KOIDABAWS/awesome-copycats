@@ -123,7 +123,7 @@ task:buttons(my_table.join(awful.button({}, 1, lain.widget.contrib.task.prompt))
 
 -- Mail IMAP check
 local mailicon = wibox.widget.imagebox(theme.widget_mail)
---[[ commented because it needs to be set before use
+--[[ commented because it needs to be set before ue
 mailicon:buttons(my_table.join(awful.button({ }, 1, function () awful.spawn(mail) end)))
 theme.mail = lain.widget.imap({
     timeout  = 180,
