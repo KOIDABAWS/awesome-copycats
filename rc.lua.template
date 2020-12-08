@@ -9,6 +9,7 @@
 local awesome, client, mouse, screen, tag = awesome, client, mouse, screen, tag
 local ipairs, string, os, table, tostring, tonumber, type = ipairs, string, os, table, tostring, tonumber, type
 
+
 local gears         = require("gears")
 local awful         = require("awful")
                       require("awful.autofocus")
@@ -57,7 +58,7 @@ local function run_once(cmd_arr)
     end
 end
 
-run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
+run_once({ "urxvtd", "unclutter -root", "terminator" }) -- entries must be separated by commas
 
 -- This function implements the XDG autostart specification
 --[[
@@ -89,12 +90,12 @@ local themes = {
 local chosen_theme = themes[7]
 local modkey       = "Mod4"
 local altkey       = "Mod1"
-local terminal     = "urxvtc"
+local terminal     = "terminator"
 local vi_focus     = false -- vi-like client focus - https://github.com/lcpz/awesome-copycats/issues/275
 local cycle_prev   = true -- cycle trough all previous client or just the first -- https://github.com/lcpz/awesome-copycats/issues/274
-local editor       = os.getenv("EDITOR") or "vim"
-local gui_editor   = os.getenv("GUI_EDITOR") or "gvim"
-local browser      = os.getenv("BROWSER") or "firefox"
+local editor       = os.getenv("EDITOR") or "gedit"
+local gui_editor   = os.getenv("GUI_EDITOR") or "gedit"
+local browser      = "brave-nightly"
 local scrlocker    = "slock"
 
 awful.util.terminal = terminal
@@ -230,16 +231,16 @@ screen.connect_signal("property::geometry", function(s)
 end)
 
 -- No borders when rearranging only 1 non-floating or maximized client
-screen.connect_signal("arrange", function (s)
-    local only_one = #s.tiled_clients == 1
-    for _, c in pairs(s.clients) do
-        if only_one and not c.floating or c.maximized then
-            c.border_width = 0
-        else
-            c.border_width = beautiful.border_width
-        end
-    end
-end)
+--screen.connect_signal("arrange", function (s)
+--    local only_one = #s.tiled_clients == 1
+--    for _, c in pairs(s.clients) do
+--        if only_one and not c.floating or c.maximized then
+--            c.border_width = 0
+ --       else
+--            c.border_width = beautiful.border_width
+ --       end
+--    end
+--end)
 -- Create a wibox for each screen and add it
 awful.screen.connect_for_each_screen(function(s) beautiful.at_screen_connect(s) end)
 -- }}}
@@ -262,7 +263,10 @@ globalkeys = my_table.join(
     -- X screen locker
     awful.key({ altkey, "Control" }, "l", function () os.execute(scrlocker) end,
               {description = "lock screen", group = "hotkeys"}),
-
+    awful.key({ modkey },"m", function () awful.spawn("pactl set-default-sink alsa_output.usb-Digidesign_Mbox_2_Digidesign-00.iec958-stereo") end,
+              {description = "set mbox sink", group = "audio"}),
+    awful.key({ modkey },"n", function () awful.spawn("pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo") end,
+              {description = "set speaker sink", group = "audio"}),
     -- Hotkeys
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description = "show help", group="awesome"}),
@@ -393,10 +397,14 @@ globalkeys = my_table.join(
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
               {description = "quit awesome", group = "awesome"}),
 
-    awful.key({ altkey, "Shift"   }, "l",     function () awful.tag.incmwfact( 0.05)          end,
+    awful.key({ altkey, "Shift"   }, "Right",     function () awful.tag.incmwfact( 0.05)          end,
               {description = "increase master width factor", group = "layout"}),
-    awful.key({ altkey, "Shift"   }, "h",     function () awful.tag.incmwfact(-0.05)          end,
+    awful.key({ altkey, "Shift"   }, "Left",     function () awful.tag.incmwfact(-0.05)          end,
               {description = "decrease master width factor", group = "layout"}),
+    awful.key({ altkey, "Shift"   }, "Down",     function () awful.client.incwfact( 0.05)          end,
+              {description = "increase master height factor", group = "layout"}),
+    awful.key({ altkey, "Shift"   }, "Up",     function () awful.client.incwfact(-0.05)          end,
+              {description = "decrease master height factor", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
@@ -440,19 +448,19 @@ globalkeys = my_table.join(
               {description = "-10%", group = "hotkeys"}),
 
     -- ALSA volume control
-    awful.key({ altkey }, "Up",
+    awful.key({}, "XF86AudioRaiseVolume",
         function ()
             os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
             beautiful.volume.update()
         end,
         {description = "volume up", group = "hotkeys"}),
-    awful.key({ altkey }, "Down",
+    awful.key({}, "XF86AudioLowerVolume",
         function ()
             os.execute(string.format("amixer -q set %s 1%%-", beautiful.volume.channel))
             beautiful.volume.update()
         end,
         {description = "volume down", group = "hotkeys"}),
-    awful.key({ altkey }, "m",
+    awful.key({ altkey }, "XF86AudioMute",
         function ()
             os.execute(string.format("amixer -q set %s toggle", beautiful.volume.togglechannel or beautiful.volume.channel))
             beautiful.volume.update()
@@ -474,16 +482,16 @@ globalkeys = my_table.join(
     -- MPD control
     awful.key({ altkey, "Control" }, "Up",
         function ()
-            os.execute("mpc toggle")
+            awful.spawn("mpc toggle")
             beautiful.mpd.update()
         end,
         {description = "mpc toggle", group = "widgets"}),
     awful.key({ altkey, "Control" }, "Down",
         function ()
-            os.execute("mpc stop")
+            awful.spawn("mpc pause")
             beautiful.mpd.update()
         end,
-        {description = "mpc stop", group = "widgets"}),
+        {description = "mpc pause", group = "widgets"}),
     awful.key({ altkey, "Control" }, "Left",
         function ()
             os.execute("mpc prev")
@@ -522,8 +530,11 @@ globalkeys = my_table.join(
               {description = "run browser", group = "launcher"}),
     awful.key({ modkey }, "a", function () awful.spawn(gui_editor) end,
               {description = "run gui editor", group = "launcher"}),
+  --  awful.key({},"#116", function () awful.spawn("systemctl poweroff") end,
+   --           {description = "poweroff", group = "Custom Commands"}),
 
     -- Default
+    
     --[[ Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"})
@@ -580,14 +591,14 @@ clientkeys = my_table.join(
               {description = "move to screen", group = "client"}),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
               {description = "toggle keep on top", group = "client"}),
-    awful.key({ modkey,           }, "n",
+    awful.key({ modkey,           }, "-",
         function (c)
             -- The client currently has the input focus, so it cannot be
             -- minimized, since minimized clients can't have the focus.
             c.minimized = true
         end ,
         {description = "minimize", group = "client"}),
-    awful.key({ modkey,           }, "m",
+    awful.key({ modkey,           }, "+",
         function (c)
             c.maximized = not c.maximized
             c:raise()
@@ -693,7 +704,7 @@ awful.rules.rules = {
       properties = { titlebars_enabled = true } },
 
     -- Set Firefox to always map on the first tag on screen 1.
-    { rule = { class = "Firefox" },
+    { rule = { class = "Brave-Nightly" },
       properties = { screen = 1, tag = awful.util.tagnames[1] } },
 
     { rule = { class = "Gimp", role = "gimp-image-window" },
@@ -715,6 +726,7 @@ client.connect_signal("manage", function (c)
         awful.placement.no_offscreen(c)
     end
 end)
+
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
 client.connect_signal("request::titlebars", function(c)
@@ -775,3 +787,5 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- possible workaround for tag preservation when switching back to default screen:
 -- https://github.com/lcpz/awesome-copycats/issues/251
 -- }}}
+--custom commands
+
