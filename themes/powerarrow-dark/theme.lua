@@ -10,7 +10,8 @@ local lain  = require("lain")
 local awful = require("awful")
 local wibox = require("wibox")
 local dpi   = require("beautiful.xresources").apply_dpi
-
+local brightness_widget = require("brightness-widget")
+local brightness = brightness_widget:new({})
 local os = os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
@@ -26,7 +27,7 @@ theme.bg_focus                                  = "#313131"
 theme.bg_urgent                                 = "#1A1A1A"
 theme.border_width                              = dpi(1)
 theme.border_normal                             = "#3F3F3F"
-theme.border_focus                              = "#2b54a7"
+theme.border_focus                              = "#224385"
 theme.border_marked                             = "#CC9393"
 theme.tasklist_bg_focus                         = "#1A1A1A"
 theme.titlebar_bg_focus                         = theme.bg_focus
@@ -333,10 +334,10 @@ function theme.at_screen_connect(s)
             	wibox.container.background(mpdicon, theme.bg_focus),
             	wibox.container.background(theme.mpd.widget, theme.bg_focus),
             arrl_dl,
-            	volicon,
-            	theme.volume.widget,
+            	brightness.widget,
             arrl_ld,
-     	    	wibox.container.background(task, theme.bg_focus),
+     	    	wibox.container.background(volicon, theme.bg_focus),
+               wibox.container.background(vol.widget, theme.bg_focus),
             arrl_dl,
             	wibox.container.background(cpuicon, theme.bg_normal),
             	wibox.container.background(cpu.widget, theme.bg_normal), 
@@ -344,8 +345,8 @@ function theme.at_screen_connect(s)
  	    	wibox.container.background(tempicon, theme.bg_focus),
             	wibox.container.background(temp.widget, theme.bg_focus),
             arrl_dl,
-            	wibox.container.background(memicon, theme.bg_normal),
-            	wibox.container.background(mem.widget, theme.bg_normal),
+            	wibox.container.background(baticon, theme.bg_normal),
+            	wibox.container.background(bat.widget, theme.bg_normal),
             arrl_ld,
             	wibox.container.background(neticon, theme.bg_focus),
             	wibox.container.background(net.widget, theme.bg_focus),
